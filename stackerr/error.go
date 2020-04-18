@@ -3,6 +3,7 @@ package stackerr
 import (
 	"errors"
 	"fmt"
+	"io"
 	"runtime"
 )
 
@@ -14,6 +15,28 @@ type errorStack struct {
 
 func (e *errorStack) Error() string {
 	return e.err.Error()
+}
+
+func (e *errorStack) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 'v':
+		// fmt.Fprintf(s, "%+v\n", e.err)
+		fmt.Fprintf(s, "error:%s\n", e.Error())
+		for _, pc := range e.stack {
+			fn := runtime.FuncForPC(pc)
+			if fn != nil {
+				file, line := fn.FileLine(pc)
+				fmt.Fprintf(s, "%s\n\t%s:%d\n", fn.Name(), file, line)
+			} else {
+				fmt.Fprintf(s, "unkown stack\n")
+			}
+		}
+		// fallthrough
+	case 's':
+		io.WriteString(s, e.Error())
+	case 'q':
+		fmt.Fprintf(s, "%q", e.Error())
+	}
 }
 
 //New returns an error with stack
@@ -64,22 +87,22 @@ func callers(n int) []uintptr {
 	return pcs
 }
 
-//PrintStack print a stack trace
-func PrintStack(err error) {
-	fmt.Printf("error: %s\n", err.Error())
-	if e, ok := err.(*errorStack); ok {
-		for _, pc := range e.stack {
-			printPC(pc)
-		}
-	}
-}
+// //PrintStack print a stack trace
+// func PrintStack(err error) {
+// 	fmt.Printf("error: %s\n", err.Error())
+// 	if e, ok := err.(*errorStack); ok {
+// 		for _, pc := range e.stack {
+// 			printPC(pc)
+// 		}
+// 	}
+// }
 
-func printPC(pc uintptr) {
-	fn := runtime.FuncForPC(pc)
-	if fn != nil {
-		file, line := fn.FileLine(pc)
-		fmt.Printf("%s\n\t%s:%d\n", fn.Name(), file, line)
-	} else {
-		fmt.Printf("unkown stack\n")
-	}
-}
+// func printPC(pc uintptr) {
+// 	fn := runtime.FuncForPC(pc)
+// 	if fn != nil {
+// 		file, line := fn.FileLine(pc)
+// 		fmt.Printf("%s\n\t%s:%d\n", fn.Name(), file, line)
+// 	} else {
+// 		fmt.Printf("unkown stack\n")
+// 	}
+// }

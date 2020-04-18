@@ -1,24 +1,17 @@
 package stackerr
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestB(t *testing.T) {
 	err := d()
 
-	// PrintStack(Cause(err))
-	// fmt.Println("============")
-	PrintStack(err)
-	// fmt.Println("============")
-	// debug.PrintStack()
+	fmt.Printf("%v", err)
 }
 
 func a() error {
-	// _, err := os.Open("1")
-	// if err != nil {
-	// 	return WithStack(err)
-	// }
 	return New("xxx")
 }
 

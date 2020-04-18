@@ -1,3 +1,3 @@
-module github.com/microbun/traces
+module github.com/microbun/tracing
 
 go 1.14

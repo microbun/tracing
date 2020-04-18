@@ -40,8 +40,8 @@ Result:
 ```base
 error: open a.txt: no such file or directory
 main.open
-        /home/micro/src/go/etsme.com/ebox/ebox.go:13
+        /home/micro/src/main.go:13
 main.main
-        /home/micro/src/go/etsme.com/ebox/ebox.go:20
+        /home/micro/src/main.go:20
 
 ```
